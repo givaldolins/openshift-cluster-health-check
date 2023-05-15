@@ -1,4 +1,4 @@
-module oc-hc
+module github.com/givaldolins/openshift-cluster-health-check/oc-hc
 
 go 1.20
 
