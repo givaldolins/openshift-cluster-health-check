@@ -12,6 +12,7 @@ $ cd openshift-cluster-health-check/oc-hc
 $ go build
 $ cp oc-hc ~/bin/
 ```
+
 ## Requirements
 1- Need to be logged in a cluster as a user with cluster-admin privileges
 2- Need _oc_ cli installed and in the system PATH
@@ -19,6 +20,7 @@ $ cp oc-hc ~/bin/
 ## Usage
 This tool can be used on its own or as a submodule for _oc_ cli.
 Ensure the user running this tool has cluster-admin privileges and run the command below:
+
 ```bash
 $ oc hc check
 ```
@@ -44,7 +46,6 @@ Flags:
 
 Use "oc-hc [command] --help" for more information about a command.
 ```
-
 
 ## Contributing
 

@@ -1,5 +1,6 @@
 module github.com/givaldolins/openshift-cluster-health-check
 
+
 go 1.20
 
 require (
