@@ -13,10 +13,38 @@ $ go build
 $ cp oc-hc ~/bin/
 ```
 
+## Requirements
+1- Need to be logged in a cluster as a user with cluster-admin privileges
+2- Need _oc_ cli installed and in the system PATH
+
 ## Usage
-Make sure you are logged in to the cluster as cluster admin and run the command below:
+This tool can be used on its own or as a submodule for _oc_ cli.
+Ensure the user running this tool has cluster-admin privileges and run the command below:
+
 ```bash
 $ oc hc check
+```
+
+## Help
+```bash
+$ oc hc help
+Used for running health checks
+
+Usage:
+  oc-hc [flags]
+  oc-hc [command]
+
+Available Commands:
+  check       Check the overall health for an OpenShift cluster
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+
+Flags:
+      --config string   config file (default is $HOME/.oc-hc.yaml)
+  -h, --help            help for oc-hc
+  -v, --version         version for oc-hc
+
+Use "oc-hc [command] --help" for more information about a command.
 ```
 
 ## Contributing
