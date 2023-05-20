@@ -4,18 +4,16 @@ Copyright © 2023 Givaldo Lins <gilins@redhat.com>
 package cmd
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
 
-	"context"
-	"encoding/json"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	metricsv1beta "k8s.io/metrics/pkg/client/clientset/versioned"
 )
-
 
 // Struct type for this command
 type checkOptions struct {
@@ -56,7 +54,6 @@ func complete(cmd *cobra.Command, args []string) checkOptions {
 
 		fmt.Printf("%s Using default kubeconfig: %s\n", color.YellowString("[Info]"), kube)
 
-
 		// Check if file exists
 	} else if _, err := os.Stat(kube); err != nil {
 		panic(err.Error())
@@ -91,7 +88,6 @@ func run(obj checkOptions) {
 		panic(err.Error())
 	}
 
-
 	// prerequired check
 	clusterAdmin(clientset)
 
@@ -116,6 +112,5 @@ func run(obj checkOptions) {
 	// namespace related checks
 	podStatus(clientset, obj.containerRestart)
 	eventStatus(clientset)
-
 
 }
