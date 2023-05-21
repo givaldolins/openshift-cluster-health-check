@@ -39,26 +39,26 @@ func checkConditions(nodes *corev1.NodeList) {
 	fmt.Println(" - Checking node conditions...")
 	warning := false
 	for _, node := range nodes.Items {
-		ready := "True"
-		memory := "False"
-		pid := "False"
-		disk := "False"
+		ready := affirmative
+		memory := negative
+		pid := negative
+		disk := negative
 		for _, condition := range node.Status.Conditions {
 			kind := condition.Type
 			status := condition.Status
-			if kind == "MemoryPressure" && status != "False" {
+			if kind == "MemoryPressure" && status != negative {
 				memory = string(status)
 				warning = true
 			}
-			if kind == "DiskPressure" && status != "False" {
+			if kind == "DiskPressure" && status != negative {
 				disk = string(status)
 				warning = true
 			}
-			if kind == "PIDPressure" && status != "False" {
+			if kind == "PIDPressure" && status != negative {
 				pid = string(status)
 				warning = true
 			}
-			if kind == "Ready" && status != "True" {
+			if kind == "Ready" && status != affirmative {
 				ready = string(status)
 				warning = true
 			}

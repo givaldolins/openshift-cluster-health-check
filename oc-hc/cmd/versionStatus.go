@@ -44,14 +44,14 @@ func versionStatus(config *rest.Config) error {
 	// Variables to be used when checking the version
 	currentChannel, _ := strconv.ParseFloat(strings.ReplaceAll(clusterversion.Spec.Channel, "stable-", ""), 64)
 	var latestChannel float64
-	openshiftApi := "https://api.openshift.com/api/upgrades_info/v1/graph?channel=stable-"
+	openshiftAPI := "https://api.openshift.com/api/upgrades_info/v1/graph?channel=stable-"
 
 	// Determine lastest channel available
 	var vResponse versionResponse
-	for i := 0.01; i < 0.99; i = i + 0.01 {
+	for i := 0.01; i < 0.99; i += 0.01 {
 		nextChannel := currentChannel + i
-		apiUrl := openshiftApi + fmt.Sprintf("%.2f", nextChannel)
-		resp, err := http.Get(apiUrl)
+		apiURL := openshiftAPI + fmt.Sprintf("%.2f", nextChannel)
+		resp, err := http.Get(apiURL) //nolint:gosec
 		if err != nil {
 			return err
 		}

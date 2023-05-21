@@ -15,6 +15,11 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+const (
+	affirmative = "True"
+	negative    = "False"
+)
+
 // Struct type for this command
 type checkOptions struct {
 	kubeconfig       string

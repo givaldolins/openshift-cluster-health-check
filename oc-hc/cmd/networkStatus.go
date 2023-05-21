@@ -20,7 +20,7 @@ func networkStatus() error {
 		return err
 	}
 
-	err = checkDns()
+	err = checkDNS()
 	if err != nil {
 		return err
 	}
@@ -49,7 +49,7 @@ func checkEgress() error {
 	return nil
 }
 
-func checkDns() error {
+func checkDNS() error {
 	// Run pod to test DNS resolution
 	fmt.Println(" - Checking DNS can resolve...")
 
