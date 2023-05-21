@@ -1,0 +1,1 @@
+https://github.com/RHsyseng/openshift-checks/blob/main/checks.md

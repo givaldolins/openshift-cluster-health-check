@@ -35,28 +35,23 @@ func coStatus(config *rest.Config) error {
 
 	// Check the CO status
 	warning := false
-	var available, progressing, degraded string
+
 	for _, co := range clusteroperators.Items {
+		available := affirmative
+		progressing := negative
+		degraded := negative
 		for _, condition := range co.Status.Conditions {
-			if condition.Type == "Degraded" && condition.Status == "True" {
+			if condition.Type == "Degraded" && condition.Status == affirmative {
 				warning = true
-				degraded = string(condition.Status)
-			} else {
-				degraded = "False"
+				degraded = affirmative
 			}
-
-			if condition.Type == "Available" && condition.Status == "False" {
+			if condition.Type == "Available" && condition.Status == negative {
 				warning = true
-				available = string(condition.Status)
-			} else {
-				available = "True"
+				available = negative
 			}
-
-			if condition.Type == "Progressing" && condition.Status == "True" {
+			if condition.Type == "Progressing" && condition.Status == affirmative {
 				warning = true
-				progressing = string(condition.Status)
-			} else {
-				progressing = "False"
+				progressing = affirmative
 			}
 		}
 		table.AddRow("  "+co.Name, available, progressing, degraded)

@@ -32,10 +32,7 @@ func apiStatus(clientset *kubernetes.Clientset) error {
 	fmt.Println(" - Checking OpenShift API server pods readiness...")
 	warning := false
 	for _, apipod := range apipods.Items {
-		cmd, err := exec.Command("oc", "exec", "-it", apipod.GetName(), "-n", "openshift-apiserver", "-c", "openshift-apiserver", "--", "curl", "-k", "https://localhost:8443/readyz").Output()
-		if err != nil {
-			return err
-		}
+		cmd, _ := exec.Command("oc", "exec", "-it", apipod.GetName(), "-n", "openshift-apiserver", "-c", "openshift-apiserver", "--", "curl", "-k", "https://localhost:8443/readyz").Output() //nolint:gosec
 		if stdout := string(cmd); stdout != "ok" {
 			ocptable.AddRow("  "+apipod.Name, "Not Ready")
 			warning = true
@@ -61,10 +58,7 @@ func apiStatus(clientset *kubernetes.Clientset) error {
 	fmt.Println(" - Checking OpenShift Kube API server pods readiness...")
 	warning = false
 	for _, kubepod := range kubepods.Items {
-		cmd, err := exec.Command("oc", "exec", "-it", kubepod.GetName(), "-n", "openshift-kube-apiserver", "-c", "kube-apiserver", "--", "curl", "-k", "https://localhost:6443/readyz").Output()
-		if err != nil {
-			return err
-		}
+		cmd, _ := exec.Command("oc", "exec", "-it", kubepod.GetName(), "-n", "openshift-kube-apiserver", "-c", "kube-apiserver", "--", "curl", "-k", "https://localhost:6443/readyz").Output() //nolint:gosec
 
 		if stdout := string(cmd); stdout != "ok" {
 			kubetable.AddRow("  "+kubepod.Name, "Not Ready")

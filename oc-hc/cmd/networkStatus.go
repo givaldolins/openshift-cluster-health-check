@@ -20,7 +20,7 @@ func networkStatus() error {
 		return err
 	}
 
-	err = checkDns()
+	err = checkDNS()
 	if err != nil {
 		return err
 	}
@@ -31,10 +31,13 @@ func networkStatus() error {
 func checkEgress() error {
 	// Run pod to test egress connectivity
 	fmt.Println(" - Checking Egress conectivity...")
-	cmd, err := exec.Command("oc", "run", "-i", "--rm=true", "network-tester", "-n", "openshift-monitoring", "--image", "registry.redhat.io/openshift4/network-tools-rhel8", "--", "/bin/bash", "-c", "ping 8.8.8.8 -c 3 &> /dev/null && echo OK").Output()
-	if err != nil {
-		return err
-	}
+
+	// Make sure the egress-tester pod doesn't exist and clean up variable
+	cleanup, _ := exec.Command("oc", "delete", "pod", "egress-tester", "-n", "openshift-monitoring").Output()
+	_ = cleanup
+
+	// run the egress tester
+	cmd, _ := exec.Command("oc", "run", "-i", "--rm=true", "egress-tester", "-n", "openshift-monitoring", "--image", "registry.redhat.io/openshift4/network-tools-rhel8", "--", "/bin/bash", "-c", "ping 8.8.8.8 -c 3 &> /dev/null && echo OK").Output()
 
 	// Print output
 	if strings.Contains(string(cmd), "OK") {
@@ -46,13 +49,15 @@ func checkEgress() error {
 	return nil
 }
 
-func checkDns() error {
+func checkDNS() error {
 	// Run pod to test DNS resolution
 	fmt.Println(" - Checking DNS can resolve...")
-	cmddns, err := exec.Command("oc", "run", "-i", "--rm=true", "dns-tester", "-n", "openshift-monitoring", "--image", "registry.redhat.io/openshift4/network-tools-rhel8", "--", "/bin/bash", "-c", "sleep 3 && dig +short www.redhat.com &> /dev/null && echo OK").Output()
-	if err != nil {
-		return err
-	}
+
+	// Make sure the egress-tester pod doesn't exist and clean up variable
+	cleanup, _ := exec.Command("oc", "delete", "pod", "dns-tester", "-n", "openshift-monitoring").Output()
+	_ = cleanup
+
+	cmddns, _ := exec.Command("oc", "run", "-i", "--rm=true", "dns-tester", "-n", "openshift-monitoring", "--image", "registry.redhat.io/openshift4/network-tools-rhel8", "--", "/bin/bash", "-c", "sleep 3 && dig +short www.redhat.com &> /dev/null && echo OK").Output()
 
 	// Print output
 	if strings.Contains(string(cmddns), "OK") {
