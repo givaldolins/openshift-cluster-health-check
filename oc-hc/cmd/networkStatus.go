@@ -12,21 +12,28 @@ import (
 )
 
 // Wrapper function
-func networkStatus() {
+func networkStatus() error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking network..."))
 
-	checkEgress()
+	err := checkEgress()
+	if err != nil {
+		return err
+	}
 
-	checkDns()
+	err = checkDns()
+	if err != nil {
+		return err
+	}
 
+	return nil
 }
 
-func checkEgress() {
+func checkEgress() error {
 	// Run pod to test egress connectivity
 	fmt.Println(" - Checking Egress conectivity...")
 	cmd, err := exec.Command("oc", "run", "-i", "--rm=true", "network-tester", "-n", "openshift-monitoring", "--image", "registry.redhat.io/openshift4/network-tools-rhel8", "--", "/bin/bash", "-c", "ping 8.8.8.8 -c 3 &> /dev/null && echo OK").Output()
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Print output
@@ -36,14 +43,15 @@ func checkEgress() {
 		fmt.Printf("  %s There is no internet connectivity\n", color.RedString("[Warning]"))
 	}
 	fmt.Println()
+	return nil
 }
 
-func checkDns() {
+func checkDns() error {
 	// Run pod to test DNS resolution
 	fmt.Println(" - Checking DNS can resolve...")
 	cmddns, err := exec.Command("oc", "run", "-i", "--rm=true", "dns-tester", "-n", "openshift-monitoring", "--image", "registry.redhat.io/openshift4/network-tools-rhel8", "--", "/bin/bash", "-c", "sleep 3 && dig +short www.redhat.com &> /dev/null && echo OK").Output()
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Print output
@@ -53,4 +61,5 @@ func checkDns() {
 		fmt.Printf("  %s DNS can not resolve www.redhat.com\n", color.RedString("[Warning]"))
 	}
 	fmt.Println()
+	return nil
 }

@@ -15,14 +15,14 @@ import (
 )
 
 // Fuction to check ETCD health
-func etcdStatus(clientset *kubernetes.Clientset) {
+func etcdStatus(clientset *kubernetes.Clientset) error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking ETCD..."))
 
 	// Get the ETCD status
 	etcdpods, err := clientset.CoreV1().Pods("openshift-etcd").List(context.TODO(), metav1.ListOptions{LabelSelector: "app=etcd"})
 	//etcds, err := clientset.CoreV1().ComponentStatuses().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Create a new table for printing alerts
@@ -34,7 +34,7 @@ func etcdStatus(clientset *kubernetes.Clientset) {
 		// Check liveness
 		cmd, err := exec.Command("oc", "exec", "-it", etcd.Name, "-n", "openshift-etcd", "-c", "etcd", "--", "curl", "-k", "-w%{http_code}", "https://localhost:9980/healthz").Output()
 		if err != nil {
-			panic(err.Error())
+			return err
 		}
 		if stdout := string(cmd); stdout != "200" {
 			table.AddRow("  "+etcd.Name, "False")
@@ -52,4 +52,6 @@ func etcdStatus(clientset *kubernetes.Clientset) {
 	}
 	table.Print()
 	fmt.Println()
+
+	return nil
 }
