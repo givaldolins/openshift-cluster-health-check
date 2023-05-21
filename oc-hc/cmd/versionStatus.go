@@ -73,9 +73,9 @@ func versionStatus(config *rest.Config) error {
 
 	// Print output
 	if (latestChannel - currentChannel) >= 0.03 {
-		fmt.Printf("  %s This cluster version (%v) is more than 2 versions behind the latest version available and might be out of support or close to reach its EOL.\n Please double check the OpenShift Lifecycle page to confirm that.\n", color.RedString("[Warning]"), clusterversion.Spec.DesiredUpdate.Version)
+		fmt.Printf("  %s This cluster version is more than 2 versions behind the latest version available and might be out of support or close to reach its EOL.\n  Please double check the OpenShift Lifecycle page to confirm that.\n", color.RedString("[Warning]"))
 	} else {
-		fmt.Printf("  %s This cluster version (%v) is no more than 2 versions behind.\n", color.YellowString("[Info]"), clusterversion.Spec.DesiredUpdate.Version)
+		fmt.Printf("  %s This cluster version is no more than 2 versions behind.\n", color.YellowString("[Info]"))
 	}
 	fmt.Println()
 
