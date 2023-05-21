@@ -1,0 +1,12 @@
+# Add 'repo' label to any root file changes
+repo:
+- '*'
+
+# Add '@domain/oc-hc' label to any change within the 'oc-hc' package
+'@domain/oc-hc':
+- oc-hc/*
+- oc-hc/**/*
+
+# Add 'check' label to any change within the cmd package
+check:
+- oc-hc/cmd/*
