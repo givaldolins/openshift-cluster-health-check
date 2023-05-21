@@ -15,19 +15,19 @@ import (
 )
 
 // Function to check the status of cluster operators
-func coStatus(config *rest.Config) {
+func coStatus(config *rest.Config) error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking cluster Operators..."))
 
 	// New clientset to interact with API
 	clientset, err := configset.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Get a list of cluster operators
 	clusteroperators, err := clientset.ConfigV1().ClusterOperators().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Create a new table for printing output
@@ -71,4 +71,5 @@ func coStatus(config *rest.Config) {
 	table.Print()
 	fmt.Println()
 
+	return nil
 }

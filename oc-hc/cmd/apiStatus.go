@@ -15,13 +15,13 @@ import (
 )
 
 // Function to check the status of the kube and openshift API
-func apiStatus(clientset *kubernetes.Clientset) {
+func apiStatus(clientset *kubernetes.Clientset) error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking API..."))
 
 	// Get the pods name for the apiserver
 	apipods, err := clientset.CoreV1().Pods("openshift-apiserver").List(context.TODO(), metav1.ListOptions{LabelSelector: "app=openshift-apiserver-a"})
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Create new ocptable for printing output
@@ -34,7 +34,7 @@ func apiStatus(clientset *kubernetes.Clientset) {
 	for _, apipod := range apipods.Items {
 		cmd, err := exec.Command("oc", "exec", "-it", apipod.GetName(), "-n", "openshift-apiserver", "-c", "openshift-apiserver", "--", "curl", "-k", "https://localhost:8443/readyz").Output()
 		if err != nil {
-			panic(err.Error())
+			return err
 		}
 		if stdout := string(cmd); stdout != "ok" {
 			ocptable.AddRow("  "+apipod.Name, "Not Ready")
@@ -54,7 +54,7 @@ func apiStatus(clientset *kubernetes.Clientset) {
 	// Get the pods name for kube apiserver
 	kubepods, err := clientset.CoreV1().Pods("openshift-kube-apiserver").List(context.TODO(), metav1.ListOptions{LabelSelector: "app=openshift-kube-apiserver"})
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Check kube apiserver pods
@@ -63,7 +63,7 @@ func apiStatus(clientset *kubernetes.Clientset) {
 	for _, kubepod := range kubepods.Items {
 		cmd, err := exec.Command("oc", "exec", "-it", kubepod.GetName(), "-n", "openshift-kube-apiserver", "-c", "kube-apiserver", "--", "curl", "-k", "https://localhost:6443/readyz").Output()
 		if err != nil {
-			panic(err.Error())
+			return err
 		}
 
 		if stdout := string(cmd); stdout != "ok" {
@@ -81,4 +81,6 @@ func apiStatus(clientset *kubernetes.Clientset) {
 	}
 	kubetable.Print()
 	fmt.Println()
+
+	return nil
 }

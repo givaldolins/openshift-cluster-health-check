@@ -15,19 +15,20 @@ import (
 )
 
 // Wrapper function
-func podStatus(clientset *kubernetes.Clientset, restartNumber int32) {
+func podStatus(clientset *kubernetes.Clientset, restartNumber int32) error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking pods status..."))
 
 	// Get a list of pods
 	pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	podRestart(pods, restartNumber)
 
 	failedPods(pods)
 
+	return nil
 }
 
 // Check for pods restarts

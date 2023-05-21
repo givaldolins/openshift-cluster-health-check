@@ -36,19 +36,19 @@ type mcpStatus struct {
 }
 
 // Function to check MCP
-func machineConfigPoolStatus() {
+func machineConfigPoolStatus() error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking MCP..."))
 	fmt.Println("  - Checking if MCP is rolling the nodes...")
 
 	// Get MCP json
 	cmdOut, err := exec.Command("oc", "get", "mcp", "-ojson").Output()
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 	data := mcpResponse{}
 	err = json.Unmarshal(cmdOut, &data)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Create a new table for printing output
@@ -83,4 +83,6 @@ func machineConfigPoolStatus() {
 	}
 	table.Print()
 	fmt.Println()
+
+	return nil
 }

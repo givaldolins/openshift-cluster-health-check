@@ -37,17 +37,17 @@ type AlertStatus struct {
 }
 
 // Function to print all current firing alerts
-func alertsStatus(config *rest.Config) {
+func alertsStatus(config *rest.Config) error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking alerts..."))
 
 	// Create clientset to get Alertmanager route
 	clientset, err := routeset.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 	route, err := clientset.RouteV1().Routes("openshift-monitoring").Get(context.TODO(), "alertmanager-main", metav1.GetOptions{})
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Define URL for alerts endpoint
@@ -56,14 +56,14 @@ func alertsStatus(config *rest.Config) {
 	// Get user token
 	cmdOut, err := exec.Command("oc", "whoami", "-t").Output()
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 	bearerToken := strings.TrimSuffix(string(cmdOut), "\n")
 
 	// Request all current alerts
 	req, err := http.NewRequest("GET", alertmanagerURL, nil)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", bearerToken))
 	req.Header.Add("Accept", "application/json")
@@ -71,7 +71,7 @@ func alertsStatus(config *rest.Config) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 	defer resp.Body.Close()
 
@@ -79,11 +79,11 @@ func alertsStatus(config *rest.Config) {
 	var alerts AlertResponse
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 	err = json.Unmarshal(body, &alerts)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Create a new table for printing alerts
@@ -105,4 +105,6 @@ func alertsStatus(config *rest.Config) {
 		fmt.Printf("  %s There is no Alerts in AlertManager in firing state at this time\n", color.YellowString("[Info]"))
 	}
 	fmt.Println()
+
+	return nil
 }

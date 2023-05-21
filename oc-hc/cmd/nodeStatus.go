@@ -15,17 +15,19 @@ import (
 )
 
 // Wrapper function
-func nodeStatus(clientset *kubernetes.Clientset) {
+func nodeStatus(clientset *kubernetes.Clientset) error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking nodes status..."))
 
 	// Get list of nodes
 	nodes, err := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	checkTaints(nodes)
 	checkConditions(nodes)
+
+	return nil
 }
 
 // Check nodes conditions
