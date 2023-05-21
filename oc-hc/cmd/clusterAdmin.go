@@ -14,7 +14,7 @@ import (
 )
 
 // Check if user has cluster-admin privileges
-func clusterAdmin(clientset *kubernetes.Clientset) {
+func clusterAdmin(clientset *kubernetes.Clientset) error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking if user has cluster-admin privileges..."))
 
 	// Define a variable with attributes to check
@@ -31,15 +31,16 @@ func clusterAdmin(clientset *kubernetes.Clientset) {
 	// Check permissions
 	auth, err := clientset.AuthorizationV1().SelfSubjectAccessReviews().Create(context.TODO(), &review, metav1.CreateOptions{})
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Print output
 	if !auth.Status.Allowed {
-		fmt.Printf("  %s User is not a cluster-admin %s\n", color.RedString("[Error]"), auth.Status.Reason)
-		panic(nil)
+		return fmt.Errorf("  %s User is not a cluster-admin. %s", color.RedString("[Error]"), auth.Status.Reason)
 	} else {
 		fmt.Printf("  %s User is cluster-admin.\n", color.YellowString("[Info]"))
 	}
 	fmt.Println()
+
+	return nil
 }

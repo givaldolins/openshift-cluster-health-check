@@ -14,13 +14,13 @@ import (
 )
 
 // Function to check existing warning events across the cluster
-func eventStatus(clientset *kubernetes.Clientset) {
+func eventStatus(clientset *kubernetes.Clientset) error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking events..."))
 
 	// Get all events
 	events, err := clientset.CoreV1().Events("").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Create a new table for printing output
@@ -46,4 +46,6 @@ func eventStatus(clientset *kubernetes.Clientset) {
 		fmt.Printf("  %s There is no warning events at this time\n", color.YellowString("[Info]"))
 	}
 	fmt.Println()
+
+	return nil
 }

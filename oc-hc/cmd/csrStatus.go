@@ -14,13 +14,13 @@ import (
 )
 
 // Fuction to check if there is pending CSRs
-func csrStatus(clientset *kubernetes.Clientset) {
+func csrStatus(clientset *kubernetes.Clientset) error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking CSRs status..."))
 
 	// Get a list of CSRs
 	csrs, err := clientset.CertificatesV1().CertificateSigningRequests().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Create a new table for printing alerts
@@ -50,4 +50,6 @@ csrLoop:
 		fmt.Printf("  %s There is no pending CSR at this time\n", color.YellowString("[Info]"))
 	}
 	fmt.Println()
+
+	return nil
 }

@@ -24,23 +24,30 @@ type nodemetrics struct {
 }
 
 // Wrapper function
-func capacityStatus(clientset *kubernetes.Clientset, config *rest.Config) {
+func capacityStatus(clientset *kubernetes.Clientset, config *rest.Config) error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking capacity..."))
 
-	nodes := allocatableResources(clientset)
+	nodes, err := allocatableResources(clientset)
+	if err != nil {
+		return err
+	}
 
-	currentUtilization(clientset, config, nodes)
+	err = currentUtilization(clientset, config, nodes)
+	if err != nil {
+		return err
+	}
 
+	return nil
 }
 
 // Fuction to check allocatable resources
-func allocatableResources(clientset *kubernetes.Clientset) []nodemetrics {
+func allocatableResources(clientset *kubernetes.Clientset) ([]nodemetrics, error) {
 	fmt.Println(" - Checking allocated resources...")
 
 	// Get a list of nodes
 	nodeList, err := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	// Create a new table for printing output
@@ -74,11 +81,11 @@ func allocatableResources(clientset *kubernetes.Clientset) []nodemetrics {
 	table.Print()
 	fmt.Println()
 
-	return rNode
+	return rNode, nil
 }
 
 // Check node current utilization
-func currentUtilization(clientset *kubernetes.Clientset, config *rest.Config, nodeList []nodemetrics) {
+func currentUtilization(clientset *kubernetes.Clientset, config *rest.Config, nodeList []nodemetrics) error {
 	fmt.Println(" - Checking current resources use...")
 
 	// Create a new table for printing output
@@ -87,13 +94,13 @@ func currentUtilization(clientset *kubernetes.Clientset, config *rest.Config, no
 	// Create new clientset for collecting metrics
 	metricClientSet, err := metricsv1beta.NewForConfig(config)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Get nodes metrics
 	nodesUtilization, err := metricClientSet.MetricsV1beta1().NodeMetricses().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	// Calculate node utilization percentage
@@ -123,4 +130,6 @@ func currentUtilization(clientset *kubernetes.Clientset, config *rest.Config, no
 	}
 	table.Print()
 	fmt.Println()
+
+	return nil
 }
