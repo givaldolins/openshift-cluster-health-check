@@ -32,4 +32,3 @@ jobs:
           goarch: ${{ matrix.goarch }}
           project_path: "./oc-hc"
           binary_name: "oc-hc"
-          extra_files: LICENSE Readme.md
