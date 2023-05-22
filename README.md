@@ -15,6 +15,7 @@ $ cp oc-hc ~/bin/
 
 ## Requirements
 1- Need to be logged in a cluster as a user with cluster-admin privileges
+
 2- Need _oc_ cli installed and in the system PATH
 
 ## Usage
