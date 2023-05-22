@@ -18,6 +18,9 @@ $ cp oc-hc ~/bin/
 
 2- Need _oc_ cli installed and in the system PATH
 
+## Installation
+Download the binary from latest [release](https://github.com/givaldolins/openshift-cluster-health-check/releases/latest) and extract it into a folder listed in your $PATH (example: /usr/local/bin, ~/bin, etc...)
+
 ## Usage
 This tool can be used on its own or as a submodule for _oc_ cli.
 Ensure the user running this tool has cluster-admin privileges and run the command below:
