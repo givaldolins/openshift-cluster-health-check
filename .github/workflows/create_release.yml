@@ -20,7 +20,7 @@ jobs:
           - goarch: arm64
             goos: windows
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@latest
       
 #      - name: Run tests
 #        run: go test -v -p=1 -timeout=0 ./...
