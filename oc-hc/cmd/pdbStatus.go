@@ -29,14 +29,12 @@ func pdbStatus(clientset *kubernetes.Clientset) error {
 	// Print pods that have restarted more than a given number
 	warning := false
 	for _, pdb := range pdbs.Items {
-		//	fmt.Printf("key: %v value: %#v\n", k, pdb.Spec)
 		maxUnavail := pdb.Spec.MaxUnavailable
 		if maxUnavail != nil {
 			if (maxUnavail.StrVal == "" && maxUnavail.IntVal == 0) || maxUnavail.StrVal == "0%" {
 				warning = true
 				table.AddRow("  "+pdb.Name, pdb.Namespace, pdb.Spec.MaxUnavailable)
 			}
-			//fmt.Printf("Key: %v String: %#v Int: %#v\n\n", pdb.Name, maxUnavail.StrVal, maxUnavail.IntVal)
 		}
 	}
 
