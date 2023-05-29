@@ -1,6 +1,7 @@
 /*
 Copyright © 2023 Givaldo Lins <gilins@redhat.com>
 */
+//nolint:typecheck
 package cmd
 
 import (
