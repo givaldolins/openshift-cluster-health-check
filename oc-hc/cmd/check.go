@@ -179,6 +179,11 @@ func run(obj checkOptions) {
 		customError(err, obj.debug)
 	}
 
+	err = pdbStatus(clientset)
+	if err != nil {
+		customError(err, obj.debug)
+	}
+
 	err = eventStatus(clientset)
 	if err != nil {
 		customError(err, obj.debug)
