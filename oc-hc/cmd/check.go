@@ -1,6 +1,7 @@
 /*
 Copyright © 2023 Givaldo Lins <gilins@redhat.com>
 */
+//nolint:typecheck
 package cmd
 
 import (
@@ -175,6 +176,11 @@ func run(obj checkOptions) {
 
 	// namespace related checks
 	err = podStatus(clientset, obj.containerRestart)
+	if err != nil {
+		customError(err, obj.debug)
+	}
+
+	err = pdbStatus(clientset)
 	if err != nil {
 		customError(err, obj.debug)
 	}
