@@ -2,7 +2,15 @@
 
 A tool to perform health checks on OpenShift Clusters
 
+## Requirements
+1- Need to be logged in a cluster as a user with cluster-admin privileges
+
+2- Need _oc_ cli installed and in the system PATH
+
 ## Installation
+Download the binary from latest [release](https://github.com/givaldolins/openshift-cluster-health-check/releases/latest) and extract it into a folder listed in your $PATH (example: /usr/local/bin, ~/bin, etc...)
+
+## Build from source
 
 Clone this repository, build the go binary and copy it to a directory in your $PATH
 
@@ -12,14 +20,6 @@ $ cd openshift-cluster-health-check/oc-hc
 $ go build
 $ cp oc-hc ~/bin/
 ```
-
-## Requirements
-1- Need to be logged in a cluster as a user with cluster-admin privileges
-
-2- Need _oc_ cli installed and in the system PATH
-
-## Installation
-Download the binary from latest [release](https://github.com/givaldolins/openshift-cluster-health-check/releases/latest) and extract it into a folder listed in your $PATH (example: /usr/local/bin, ~/bin, etc...)
 
 ## Usage
 This tool can be used on its own or as a submodule for _oc_ cli.
