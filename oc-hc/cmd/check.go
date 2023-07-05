@@ -12,7 +12,9 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 
+	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -30,7 +32,7 @@ type checkOptions struct {
 
 // checkCmd represents the check command
 var checkCmd = &cobra.Command{
-	Use:   "check",
+	Use:   "cluster",
 	Short: "Check the overall health for an OpenShift cluster",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -61,9 +63,6 @@ func complete(cmd *cobra.Command, args []string) checkOptions {
 
 		fmt.Printf("%s Using default kubeconfig: %s\n", color.YellowString("[Info]"), kube)
 
-		// Check if file exists
-	} else if _, err := os.Stat(kube); err != nil {
-		customPanic(err, true)
 	} else {
 		fmt.Printf("%s Using informed kubeconfig: %s\n", color.YellowString("[Info]"), kube)
 	}
@@ -92,15 +91,17 @@ func complete(cmd *cobra.Command, args []string) checkOptions {
 
 func run(obj checkOptions) {
 
-	// Build a new config from flag kubeconfig and instantiate a new clientset
+	var config *rest.Config
+
+	// Build a new clientConfig from flag kubeconfig and instantiate a new clientset
 	config, err := clientcmd.BuildConfigFromFlags("", obj.kubeconfig)
 	if err != nil {
-		if obj.debug {
-			customPanic(err, true)
-		} else {
-			customPanic(err, false)
-		}
+		fmt.Printf("%s kubeconfig invalid, tryin to use current-context\n", color.YellowString("[Info]"))
+
+		configFlags := genericclioptions.NewConfigFlags(false)
+		config, _ = configFlags.ToRESTConfig()
 	}
+
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		if obj.debug {
