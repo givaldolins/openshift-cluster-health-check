@@ -37,7 +37,10 @@ func checkEgress() error {
 	_ = cleanup
 
 	// run the egress tester
-	cmd, _ := exec.Command("oc", "run", "-i", "--rm=true", "egress-tester", "-n", "openshift-monitoring", "--image", "registry.redhat.io/openshift4/network-tools-rhel8", "--", "/bin/bash", "-c", "ping 8.8.8.8 -c 3 &> /dev/null && echo OK").Output()
+	cmd, err := exec.Command("oc", "run", "-i", "--rm=true", "egress-tester", "-n", "openshift-monitoring", "--image", "registry.redhat.io/openshift4/network-tools-rhel8", "--", "/bin/bash", "-c", "ping 8.8.8.8 -c 3 &> /dev/null && echo OK").Output()
+	if err != nil {
+		return err
+	}
 
 	// Print output
 	if strings.Contains(string(cmd), "OK") {
@@ -57,7 +60,10 @@ func checkDNS() error {
 	cleanup, _ := exec.Command("oc", "delete", "pod", "dns-tester", "-n", "openshift-monitoring").Output()
 	_ = cleanup
 
-	cmddns, _ := exec.Command("oc", "run", "-i", "--rm=true", "dns-tester", "-n", "openshift-monitoring", "--image", "registry.redhat.io/openshift4/network-tools-rhel8", "--", "/bin/bash", "-c", "sleep 3 && dig +short www.redhat.com &> /dev/null && echo OK").Output()
+	cmddns, err := exec.Command("oc", "run", "-i", "--rm=true", "dns-tester", "-n", "openshift-monitoring", "--image", "registry.redhat.io/openshift4/network-tools-rhel8", "--", "/bin/bash", "-c", "sleep 3 && dig +short www.redhat.com &> /dev/null && echo OK").Output()
+	if err != nil {
+		return err
+	}
 
 	// Print output
 	if strings.Contains(string(cmddns), "OK") {
