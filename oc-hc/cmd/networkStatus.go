@@ -15,12 +15,12 @@ import (
 func networkStatus() error {
 	fmt.Print(color.New(color.Bold).Sprintln("Checking network..."))
 
-	err := checkEgress()
+	err := checkDNS()
 	if err != nil {
 		return err
 	}
 
-	err = checkDNS()
+	err = checkEgress()
 	if err != nil {
 		return err
 	}
@@ -30,23 +30,23 @@ func networkStatus() error {
 
 func checkEgress() error {
 	// Run pod to test egress connectivity
-	fmt.Println(" - Checking Egress conectivity...")
+	fmt.Println(" - Checking Egress conectivity to the internet...")
 
 	// Make sure the egress-tester pod doesn't exist and clean up variable
 	cleanup, _ := exec.Command("oc", "delete", "pod", "egress-tester", "-n", "openshift-monitoring").Output()
 	_ = cleanup
 
 	// run the egress tester
-	cmd, err := exec.Command("oc", "run", "-i", "--rm=true", "egress-tester", "-n", "openshift-monitoring", "--image", "registry.redhat.io/openshift4/network-tools-rhel8", "--", "/bin/bash", "-c", "ping 8.8.8.8 -c 3 &> /dev/null && echo OK").Output()
+	cmd, err := exec.Command("oc", "run", "-i", "--rm=true", "egress-tester", "-n", "openshift-monitoring", "--image", "registry.redhat.io/openshift4/network-tools-rhel8", "--", "/bin/bash", "-c", "curl https://www.redhat.com &> /dev/null && echo OK").Output()
 	if err != nil {
 		return err
 	}
 
 	// Print output
 	if strings.Contains(string(cmd), "OK") {
-		fmt.Printf("  %s There is internet connectivity\n", color.YellowString("[Info]"))
+		fmt.Printf("  %s There is internet connectivity to www.redhat.com\n", color.YellowString("[Info]"))
 	} else {
-		fmt.Printf("  %s There is no internet connectivity\n", color.RedString("[Warning]"))
+		fmt.Printf("  %s There is no internet connectivity to www.redhat.com\n", color.RedString("[Warning]"))
 	}
 	fmt.Println()
 	return nil
@@ -54,7 +54,7 @@ func checkEgress() error {
 
 func checkDNS() error {
 	// Run pod to test DNS resolution
-	fmt.Println(" - Checking DNS can resolve...")
+	fmt.Println(" - Checking if DNS can resolve external names...")
 
 	// Make sure the egress-tester pod doesn't exist and clean up variable
 	cleanup, _ := exec.Command("oc", "delete", "pod", "dns-tester", "-n", "openshift-monitoring").Output()
