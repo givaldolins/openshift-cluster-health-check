@@ -106,10 +106,10 @@ Download the binary from latest [release](https://github.com/givaldolins/openshi
 Clone this repository, build the go binary and copy it to a directory in your $PATH
 
 ```bash
-$ git clone https://github.com/givaldolins/openshift-cluster-health-check.git
-$ cd openshift-cluster-health-check/oc-hc
-$ go build
-$ cp oc-hc ~/bin/
+git clone https://github.com/givaldolins/openshift-cluster-health-check.git
+cd openshift-cluster-health-check/oc-hc
+go build
+cp oc-hc ~/bin/
 ```
 
 ## Usage
@@ -117,12 +117,12 @@ This tool is a submodule for _oc_ cli.
 Ensure the user running this tool has at least the mininum permissions listed in the Requirements and run the command below:
 
 ```bash
-$ oc hc cluster
+oc hc cluster
 ```
 
 ## Help
 ```bash
-$ oc hc help
+oc hc help
 Used for running health checks
 
 Usage:
