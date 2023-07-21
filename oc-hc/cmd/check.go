@@ -28,6 +28,7 @@ type checkOptions struct {
 	kubeconfig       string
 	containerRestart int32
 	debug            bool
+	network          bool
 }
 
 // checkCmd represents the check command
@@ -45,9 +46,10 @@ var checkCmd = &cobra.Command{
 func init() {
 
 	rootCmd.AddCommand(checkCmd)
+	checkCmd.PersistentFlags().BoolP("debug", "d", false, "(default false) Print golang error messages")
+	checkCmd.PersistentFlags().BoolP("network", "n", false, "(default false) Run additional network checks")
 	checkCmd.PersistentFlags().StringP("kubeconfig", "k", "", "(optional) Path for the kubeconfig file to be used")
 	checkCmd.PersistentFlags().Int32P("container-restart", "r", 10, "(default 10) Show pods that has containers that restarted more times than this number")
-	checkCmd.PersistentFlags().BoolP("debug", "d", false, "(default false) Print golang error messages")
 }
 
 // Function to run some verifications
@@ -79,11 +81,18 @@ func complete(cmd *cobra.Command, args []string) checkOptions {
 		customPanic(err, true)
 	}
 
+	// Check if network option is enabled
+	network, err := cmd.Flags().GetBool("network")
+	if err != nil {
+		customPanic(err, true)
+	}
+
 	// Instantiate a checkOptions object
 	obj := checkOptions{
 		kubeconfig:       kube,
 		containerRestart: cr,
 		debug:            debug,
+		network:          network,
 	}
 
 	return obj
@@ -103,16 +112,6 @@ func run(obj checkOptions) {
 	}
 
 	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		if obj.debug {
-			customPanic(err, true)
-		} else {
-			customPanic(err, false)
-		}
-	}
-
-	// prerequired check
-	err = clusterAdmin(clientset)
 	if err != nil {
 		if obj.debug {
 			customPanic(err, true)
@@ -154,9 +153,11 @@ func run(obj checkOptions) {
 	}
 
 	// network checks
-	err = networkStatus()
-	if err != nil {
-		customError(err, obj.debug)
+	if obj.network {
+		err = networkStatus()
+		if err != nil {
+			customError(err, obj.debug)
+		}
 	}
 
 	// cluster wide checks

@@ -11,14 +11,14 @@ import (
 )
 
 func customError(err error, debug bool) {
-	fmt.Printf("%s Something went wrong. Enable debug mode for more information\n", color.RedString("[Error]"))
+	fmt.Printf("  %s Something went wrong. Enable debug mode for more information\n", color.RedString("[Error]"))
 	if debug {
 		fmt.Println(err)
 	}
 }
 
 func customPanic(err error, debug bool) {
-	fmt.Printf("%s Something went wrong: %s\n", color.RedString("[Error]"), err)
+	fmt.Printf("  %s Something went wrong: %s\n", color.RedString("[Error]"), err)
 	if debug {
 		panic(err)
 	} else {

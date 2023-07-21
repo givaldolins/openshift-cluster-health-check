@@ -31,7 +31,10 @@ func etcdStatus(clientset *kubernetes.Clientset) error {
 	warning := false
 	for _, etcd := range etcdpods.Items {
 		// Check liveness
-		cmd, _ := exec.Command("oc", "exec", "-it", etcd.Name, "-n", "openshift-etcd", "-c", "etcd", "--", "curl", "-k", "-w%{http_code}", "https://localhost:9980/healthz").Output() //nolint:gosec
+		cmd, err := exec.Command("oc", "exec", "-it", etcd.Name, "-n", "openshift-etcd", "-c", "etcd", "--", "curl", "-k", "-w%{http_code}", "https://localhost:9980/healthz").Output() //nolint:gosec
+		if err != nil {
+			return err
+		}
 		if stdout := string(cmd); stdout != "200" {
 			table.AddRow("  "+etcd.Name, "False")
 			warning = true
