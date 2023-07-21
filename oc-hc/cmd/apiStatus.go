@@ -33,7 +33,7 @@ func apiStatus(clientset *kubernetes.Clientset) error {
 	warning := false
 	for _, apipod := range apipods.Items {
 		cmd, err := exec.Command("oc", "exec", "-it", apipod.GetName(), "-n", "openshift-apiserver", "-c", "openshift-apiserver", "--", "curl", "-k", "https://localhost:8443/readyz").Output() //nolint:gosec
-		if err != nil { //nolint:govet
+		if err != nil { 
 			return err
 		}
 		if stdout := string(cmd); stdout != "ok" {
