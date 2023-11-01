@@ -6,6 +6,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
@@ -24,18 +25,23 @@ func eventStatus(clientset *kubernetes.Clientset) error {
 	}
 
 	// Create a new table for printing output
-	table := table.New("  REASON", "OBJECT", "MESSAGE").WithPadding(5)
+	table := table.New("  LAST EVENT TIME", "REASON", "OBJECT", "MESSAGE").WithPadding(5)
 
 	warning := false
-	var object string
+	var object, lasteventtime string
 	for _, event := range events.Items {
 		if event.Type == "Warning" {
 			object = event.InvolvedObject.Kind + "/" + event.InvolvedObject.Name
 			warning = true
-			if len(event.Message) < 80 {
-				table.AddRow("  "+event.Reason, object, event.Message)
+			if event.LastTimestamp.IsZero() {
+				lasteventtime = "<Unknown>"
 			} else {
-				table.AddRow("  "+event.Reason, object, event.Message[:80]+"...")
+				lasteventtime = event.LastTimestamp.UTC().Format(time.UnixDate)
+			}
+			if len(event.Message) < 80 {
+				table.AddRow("  "+lasteventtime, event.Reason, object, event.Message)
+			} else {
+				table.AddRow("  "+lasteventtime, event.Reason, object, event.Message[:80]+"...")
 			}
 		}
 	}
